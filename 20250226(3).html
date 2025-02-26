@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今日茶歇查询</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f8f9fa;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 3rem 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 2;
+        }
+
+        .title {
+            color: #e74c3c;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            animation: blink 1s infinite;
+        }
+
+        .time-display {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .check-btn {
+            padding: 10px 25px;
+            font-size: 1rem;
+            color: white;
+            background: #3498db;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .check-btn:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+
+        .divider {
+            width: 60px;
+            height: 3px;
+            background: #3498db;
+            margin: 2rem auto;
+            border-radius: 3px;
+        }
+
+        /* 烟花特效 */
+        .firework {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ff7f50;
+            border-radius: 50%;
+            animation: firework-animation 2s linear;
+        }
+
+        @keyframes firework-animation {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            70% {
+                transform: translate(-50px, -120px) scale(3);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translate(-100px, -200px) scale(5);
+                opacity: 0;
+            }
+        }
+
+        .firework::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-color: #ffe4e1;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: smoke 4s linear;
+        }
+
+        @keyframes smoke {
+            0% { transform: scale(1); }
+            100% { transform: scale(3); }
+        }
+
+        @media (max-width: 480px) {
+            .title { font-size: 2rem; }
+            .time-display { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">今天有下午茶吗？</h1>
+        
+        <div class="time-display">
+            <span id="current-time"></span>
+        </div>
+
+        <div class="divider"></div>
+
+        <button class="check-btn">立即查看最新供应</button>
+    </div>
+
+    <script>
+        // 动态时间显示
+        function updateTime() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const period = hours >= 12 ? 'PM' : 'AM';
+            
+            document.getElementById('current-time').textContent = 
+                `${hours % 12 === 0 ? 12 : hours % 12}:${minutes} ${period}`;
+        }
+        
+        setInterval(updateTime, 1000);
+        updateTime(); // 初始化显示
+        
+        // 烟花特效触发
+        let fireworkCount = 0;
+
+        document.querySelector('.check-btn').addEventListener('click', () => {
+            // 清除之前的烟花
+            const fireworks = document.querySelectorAll('.firework');
+            fireworks.forEach(fw => fw.remove());
+
+            // 生成新烟花
+            for (let i = 0; i < 5; i++) {
+                const firework = document.createElement('div');
+                firework.className = 'firework';
+                
+                // 随机位置
+                const left = Math.random() * window.innerWidth - 50;
+                const bottom = Math.random() * window.innerHeight - 50;
+                firework.style.left = `${left}px`;
+                firework.style.bottom = `${bottom}px`;
+
+                // 随机颜色
+                const colors = ['#ff7f50', '#ffa07a', '#ff4500', '#ff1a1d'];
+                firework.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+                document.body.appendChild(firework);
+                
+                // 添加烟雾效果
+                const smoke = document.createElement('div');
+                smoke.className = 'firework::after';
+                smoke.style.left = '0';
+                smoke.style.top = '0';
+                smoke.style.backgroundColor = 
+                    `rgba(${Math.floor(Math.random()*256)}, ${Math.floor(Math.random()*256)}, ${Math.floor(Math.random()*256)}, 0.7)`;
+                firework.appendChild(smoke);
+
+                fireworkCount++;
+            }
+        });
+    </script>
+</body>
+</html>
